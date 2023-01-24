@@ -88,19 +88,24 @@ export default class Storage {
       existedItem.description = categoryToSave.description;
     } else {
       //new Category
-      categoryToSave.id = new Date().getTime();
+      // categoryToSave.id = new Date().getTime();
+      categoryToSave.id = crypto.randomUUID();
       categoryToSave.createdAt = new Date().toISOString();
       savedCategories.push(categoryToSave);
     }
     localStorage.setItem('category', JSON.stringify(savedCategories));
   }
 
-  static getAllProducts() {
+  static getAllProducts(sortOption = 'newest') {
     const savedProducts = JSON.parse(localStorage.getItem('products')) || [];
     // Sort => نزولی (descending)
     const sortedProducts = savedProducts.sort((a, b) => {
       // return new Date(a.createdAt) > new Date(b.createdAt) ? -1 : 1;
-      return new Date(a.updatedAt) > new Date(b.updatedAt) ? -1 : 1;
+      if (sortOption === 'newest') {
+        return new Date(a.updatedAt) > new Date(b.updatedAt) ? -1 : 1;
+      } else if (sortOption === 'oldest') {
+        return new Date(a.updatedAt) < new Date(b.updatedAt) ? -1 : 1;
+      }
     });
     return sortedProducts;
   }
@@ -117,7 +122,8 @@ export default class Storage {
       existedItem.updatedAt = new Date().toISOString();
     } else {
       //new Category
-      productToSave.id = new Date().getTime();
+      // productToSave.id = new Date().getTime();
+      productToSave.id = crypto.randomUUID();
       productToSave.createdAt = new Date().toISOString();
       productToSave.updatedAt = new Date().toISOString();
       savedProducts.push(productToSave);

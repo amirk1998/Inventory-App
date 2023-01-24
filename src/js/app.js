@@ -9,5 +9,5 @@ document.addEventListener('DOMContentLoaded', () => {
   console.log(ProductView);
   // Create Categories Option
   CategoryView.createCategoriesList();
-  ProductView.createProductsList();
+  ProductView.createProductsList(ProductView.products);
 });
