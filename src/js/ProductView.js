@@ -85,6 +85,7 @@ class ProductView {
                 <button
                   data-modal-hide="defaultModal"
                   type="button"
+                  id="edit-product-btn"
                   class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                 >
                   Edit
@@ -112,7 +113,7 @@ class ProductView {
     });
 
     const editBtns = [...document.querySelectorAll('.edit-product')];
-    console.log(editBtns);
+    // console.log(editBtns);
     editBtns.forEach((item) => {
       item.addEventListener('click', (event) => this.editProduct(event));
     });
@@ -146,6 +147,7 @@ class ProductView {
   }
 
   editProduct(event) {
+    event.preventDefault();
     const productId = event.target.dataset.productId;
     console.log(productId);
     const editedProduct = this.products.find((element) => element.id === productId);
@@ -155,8 +157,10 @@ class ProductView {
     // Begin::Category List Created in Edit Product
     let result = ``;
     Storage.getAllCategories().forEach((element) => {
-      if (element.id !== selectedCategory.id) {
-        result += `<option class="bg-slate-500 text-slate-300" value=${element.id}>${element.title}</option>`;
+      if (element.id === selectedCategory.id) {
+        result += `<option class="category-list bg-slate-500 text-slate-300" selected value=${element.id} data-product-id=${element.id} >${element.title}</option>`;
+      } else {
+        result += `<option class="category-list bg-slate-500 text-slate-300" value=${element.id} data-product-id=${element.id} >${element.title}</option>`;
       }
     });
     const categoryDOM = document.querySelector('#product-category');
@@ -186,19 +190,27 @@ class ProductView {
       <div>
         <label for="product-category" class="block mb-1 text-slate-800">category</label>
         <select name="product-category" id="product-category" class="form-select bg-transparent text-slate-800 rounded-xl w-full border border-slate-800 h-10 px-2 blo">
-        <option class="bg-slate-500 text-slate-300" value="${selectedCategory.id}" selected>${selectedCategory.title}</option>  
+        
         ${result}
         </select>
       </div>
       </form>
   </div>
     `;
+    // let newEditProduct = {};
+    const editProductModalBtn = document.querySelector('#edit-product-btn');
+    editProductModalBtn.addEventListener('click', (event) => {
+      // console.log('Edit Product Btn in modal has been clicked');
+      // console.log(event.target);
+      document.querySelector('#product-title').value = editedProduct.title;
+      document.querySelector('#product-category').value = editedProduct.category;
+      document.querySelector('#product-quantity').value = editedProduct.quantity;
 
-    editedProduct.title = document.querySelector('#product-title').value;
-    editedProduct.category = document.querySelector('#product-category').value;
-    editedProduct.quantity = document.querySelector('#product-quantity').value;
-
-    Storage.saveProducts(editedProduct);
+      Storage.saveProducts(editedProduct);
+      this.products = Storage.getAllProducts();
+      this.createProductsList(this.products);
+      // console.log(newEditProduct);
+    });
   }
 }
 
